@@ -1,0 +1,19 @@
+PixelSyncBox/
+
+├── app.py                 # 起動
+├── config.py              # 設定
+├── database.py            # SQLite
+├── scanner.py             # NASスキャン
+├── uploader.py            # Pixelへコピー
+├── adb.py                 # ADB制御
+├── queue.py               # キュー管理
+├── watcher.py             # 差分監視
+├── photo.py               # Googleフォト監視
+├── gui/
+│   ├── main.py
+│   └── widgets.py
+│
+├── database/
+│   └── pixel.db
+│
+└── logs/
