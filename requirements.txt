@@ -1,0 +1,15 @@
+certifi==2026.5.20
+charset-normalizer==3.4.7
+decorator==5.3.1
+idna==3.18
+packaging==26.2
+pillow==11.3.0
+PySide6_Essentials==6.10.3
+requests==2.32.5
+retry2==0.9.5
+shiboken6==6.10.3
+SQLAlchemy==2.0.50
+tqdm==4.68.2
+typing_extensions==4.15.0
+urllib3==2.6.3
+watchdog==6.0.0
