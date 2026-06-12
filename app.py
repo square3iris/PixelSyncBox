@@ -1,9 +1,23 @@
-from pixel_sync.database.db import Database
+from pixel_sync.adb import ADB
+from pixel_sync.scanner import Scanner
 
 
 def main():
-    Database()
-    print("Pixel Sync Box started.")
+
+    ADB.devices()
+
+    print()
+
+    print("DCIM")
+    print("-" * 60)
+
+    for name in ADB.list_dir("/sdcard/DCIM"):
+        print(name)
+
+    print("=" * 60)
+
+    scanner = Scanner()
+    scanner.scan()
 
 
 if __name__ == "__main__":
