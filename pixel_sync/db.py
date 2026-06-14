@@ -83,6 +83,7 @@ class Database:
             size=?,
             mtime=?,
             media_type=?,
+            status='UPDATED',
             updated_at=CURRENT_TIMESTAMP
         WHERE path=?
         """, (
@@ -106,6 +107,20 @@ class Database:
             status,
             str(path)
         ))
+
+        if self.cursor.rowcount != 1:
+            print(f"UPDATE FAILED: {path}")
+
+    def get_new_files(self):
+
+        self.cursor.execute("""
+        SELECT path
+        FROM files
+        WHERE status IN ('NEW', 'UPDATED')
+        ORDER BY id
+        """)
+
+        return [row[0] for row in self.cursor.fetchall()]
 
     def count(self):
 

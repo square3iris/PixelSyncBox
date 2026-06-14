@@ -59,10 +59,12 @@ class Scanner:
         print(f"Videos   : {self.video_files:,}")
         print(f"Total    : {self.total_files:,}")
         print()
+
         print(f"New      : {self.new_files:,}")
         print(f"Updated  : {self.updated_files:,}")
         print(f"Skipped  : {self.skipped_files:,}")
         print()
+
         print(f"Database : {self.db.count():,} records")
         print(f"Elapsed  : {elapsed:.1f} sec")
 
@@ -116,7 +118,6 @@ class Scanner:
                     if record is None:
 
                         self.db.insert_file(media)
-                        self.db.update_status(media.path, "NEW")
                         self.new_files += 1
 
                     else:
@@ -129,12 +130,15 @@ class Scanner:
                         ):
 
                             self.db.update_file(media)
-                            self.db.update_status(media.path, "UPDATED")
                             self.updated_files += 1
 
                         else:
 
-                            self.db.update_status(media.path, "SKIP")
+                            self.db.update_status(
+                                media.path,
+                                "SKIP"
+                            )
+
                             self.skipped_files += 1
 
                     if self.total_files % 1000 == 0:

@@ -58,11 +58,15 @@ class ADB:
     @staticmethod
     def push(local_path, remote_path):
 
-        return subprocess.run(
+        result = subprocess.run(
             [
                 "adb",
                 "push",
                 str(local_path),
-                remote_path
-            ]
-        ).returncode == 0
+                remote_path,
+            ],
+            capture_output=True,
+            text=True,
+        )
+
+        return result.returncode == 0

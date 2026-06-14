@@ -1,5 +1,6 @@
 from pixel_sync.adb import ADB
 from pixel_sync.scanner import Scanner
+from pixel_sync.sync import Sync
 
 
 def main():
@@ -18,6 +19,9 @@ def main():
 
     scanner = Scanner()
     scanner.scan()
+
+    sync = Sync()
+    sync.upload_all()
 
 
 if __name__ == "__main__":
