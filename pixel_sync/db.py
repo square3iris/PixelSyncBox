@@ -108,9 +108,6 @@ class Database:
             str(path)
         ))
 
-        if self.cursor.rowcount != 1:
-            print(f"UPDATE FAILED: {path}")
-
     def get_new_files(self):
 
         self.cursor.execute("""
@@ -120,7 +117,10 @@ class Database:
         ORDER BY id
         """)
 
-        return [row[0] for row in self.cursor.fetchall()]
+        return [
+            row[0]
+            for row in self.cursor.fetchall()
+        ]
 
     def count(self):
 
