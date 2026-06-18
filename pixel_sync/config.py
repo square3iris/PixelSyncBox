@@ -1,3 +1,9 @@
+# ============================================
+# FILE: pixel_sync/config.py
+# VERSION: 1.1.0
+# UPDATED: 2026-06-15
+# ============================================
+
 from pathlib import Path
 
 # ===== NAS =====
@@ -17,6 +23,11 @@ PIXEL_UPLOAD_DIR = "/sdcard/DCIM/PixelSyncBox"
 BATCH_SIZE_GB = 20
 
 BATCH_SIZE = BATCH_SIZE_GB * 1024 * 1024 * 1024
+
+UPLOAD_THREADS = 2
+MAX_RETRY = 3
+RETRY_WAIT = 1
+COMMIT_INTERVAL = 20
 
 # ===== Scan =====
 

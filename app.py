@@ -20,8 +20,7 @@ def main():
     scanner = Scanner()
     scanner.scan()
 
-    sync = Sync()
-    sync.upload_all()
+    Sync().run()
 
 
 if __name__ == "__main__":

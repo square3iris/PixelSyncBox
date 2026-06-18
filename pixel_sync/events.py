@@ -1,0 +1,22 @@
+# ============================================
+# FILE: pixel_sync/events.py
+# VERSION: 1.0.0
+# CHANGES: Define application events
+# ============================================
+
+APP_START = "APP_START"
+APP_FINISHED = "APP_FINISHED"
+
+SCAN_START = "SCAN_START"
+SCAN_FINISHED = "SCAN_FINISHED"
+
+UPLOAD_START = "UPLOAD_START"
+UPLOAD_FINISHED = "UPLOAD_FINISHED"
+
+GOOGLE_WAIT_START = "GOOGLE_WAIT_START"
+GOOGLE_WAIT_FINISHED = "GOOGLE_WAIT_FINISHED"
+
+DELETE_START = "DELETE_START"
+DELETE_FINISHED = "DELETE_FINISHED"
+
+ERROR = "ERROR"

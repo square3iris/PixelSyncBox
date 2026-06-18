@@ -1,3 +1,9 @@
+# ============================================
+# FILE: pixel_sync/pixel.py
+# VERSION: 1.1.0
+# CHANGES: Add camera file cache support
+# ============================================
+
 from pixel_sync.adb import ADB
 
 

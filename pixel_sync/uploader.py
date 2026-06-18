@@ -1,4 +1,10 @@
-from concurrent.futures import ThreadPoolExecutor
+# ============================================
+# FILE: pixel_sync/uploader.py
+# VERSION: 1.0.1
+# CHANGES: Add development header
+# ============================================
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pixel_sync.config import UPLOAD_THREADS, COMMIT_INTERVAL
 
 from pixel_sync.db import Database
 from pixel_sync.worker import UploadWorker
@@ -9,7 +15,7 @@ class Uploader:
     def __init__(self, db: Database):
 
         self.db = db
-        self.worker = UploadWorker(db)
+        self.worker = UploadWorker()
 
     def upload_files(self, files):
 
@@ -18,7 +24,7 @@ class Uploader:
             print("Nothing to upload.")
             return
 
-        pixel_files = self.worker.pixel.camera_files()
+        pixel_files = self.worker.camera_files()
 
         total = len(files)
 
@@ -31,7 +37,7 @@ class Uploader:
         print("Uploading")
         print("=" * 60)
 
-        with ThreadPoolExecutor(max_workers=2) as executor:
+        with ThreadPoolExecutor(max_workers=UPLOAD_THREADS) as executor:
 
             futures = [
                 executor.submit(
@@ -61,7 +67,7 @@ class Uploader:
 
                     failed += 1
 
-                if index % 20 == 0:
+                if index % COMMIT_INTERVAL == 0:
                     self.db.commit()
 
                 print(

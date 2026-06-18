@@ -20,3 +20,6 @@ class Sync:
         self.uploader.upload_files(files)
 
         self.db.close()
+    def run(self):
+
+        self.upload_all()
