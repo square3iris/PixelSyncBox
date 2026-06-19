@@ -1,3 +1,8 @@
+# ============================================
+# FILE: pixel_sync/db.py
+# VERSION: 1.1.0
+# UPDATED: 2026-06-18
+# ============================================
 import sqlite3
 from pathlib import Path
 

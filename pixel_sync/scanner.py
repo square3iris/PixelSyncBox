@@ -1,3 +1,8 @@
+# ============================================
+# FILE: pixel_sync/scanner.py
+# VERSION: 1.1.0
+# UPDATED: 2026-06-18
+# ============================================
 import os
 import time
 from pathlib import Path
@@ -39,9 +44,9 @@ class Scanner:
         self.start_time = time.time()
 
         print("=" * 60)
-        print("Pixel Sync Box Scanner")
+        print("Pixel Sync Box スキャナー")
         print("=" * 60)
-        print(f"Target : {PHOTO_DIR}")
+        print(f"対象ディレクトリ : {PHOTO_DIR}")
         print()
 
         self._scan_dir(PHOTO_DIR)
@@ -52,24 +57,24 @@ class Scanner:
 
         print()
         print("=" * 60)
-        print("Finished")
+        print("スキャン完了")
         print("=" * 60)
 
-        print(f"Images   : {self.image_files:,}")
-        print(f"Videos   : {self.video_files:,}")
-        print(f"Total    : {self.total_files:,}")
+        print(f"画像ファイル : {self.image_files:,}")
+        print(f"動画ファイル : {self.video_files:,}")
+        print(f"合計ファイル : {self.total_files:,}")
         print()
 
-        print(f"New      : {self.new_files:,}")
-        print(f"Updated  : {self.updated_files:,}")
-        print(f"Skipped  : {self.skipped_files:,}")
+        print(f"新規追加     : {self.new_files:,}")
+        print(f"更新         : {self.updated_files:,}")
+        print(f"スキップ     : {self.skipped_files:,}")
         print()
 
-        print(f"Database : {self.db.count():,} records")
-        print(f"Elapsed  : {elapsed:.1f} sec")
+        print(f"データベース : {self.db.count():,} レコード")
+        print(f"経過時間     : {elapsed:.1f} 秒")
 
         if elapsed > 0:
-            print(f"Speed    : {self.total_files / elapsed:.1f} files/sec")
+            print(f"処理速度     : {self.total_files / elapsed:.1f} ファイル/秒")
 
         self.db.close()
 
@@ -134,11 +139,6 @@ class Scanner:
 
                         else:
 
-                            self.db.update_status(
-                                media.path,
-                                "SKIP"
-                            )
-
                             self.skipped_files += 1
 
                     if self.total_files % 1000 == 0:
@@ -152,13 +152,13 @@ class Scanner:
                         )
 
                         print(
-                            f"{self.total_files:>8,} files | "
-                            f"{speed:>8.1f} files/sec | "
-                            f"New:{self.new_files:>6} "
-                            f"Upd:{self.updated_files:>6} "
-                            f"Skip:{self.skipped_files:>6}"
+                            f"{self.total_files:>8,} ファイル | "
+                            f"{speed:>8.1f} ファイル/秒 | "
+                            f"新規:{self.new_files:>6} "
+                            f"更新:{self.updated_files:>6} "
+                            f"スキップ:{self.skipped_files:>6}"
                         )
 
         except PermissionError:
 
-            print(f"Skip : {folder}")
+            print(f"アクセス拒否のためスキップ : {folder}")

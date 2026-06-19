@@ -1,31 +1,21 @@
-# Architecture Decisions
+# Decision
 
-## 2026-06-11
+## ScannerはSKIPを書き込まない
 
-### Scannerはos.scandirを採用
+変更のないファイルはDBを書き換えない。
 
 理由
 
-Path.rglobより高速。
+- NEW状態を維持できる
+- Upload対象が消えない
+- DB更新量削減
+- 設計が単純になる
 
-約10万ファイル以上では性能差が大きい。
+状態管理
 
----
+NEW
+UPDATED
+DONE
+FAILED（予定）
 
-### SQLiteを中心設計にする
-
-Scanner
-
-↓
-
-SQLite
-
-↓
-
-Uploader
-
-↓
-
-GUI
-
-すべてSQLite経由で状態管理する。
+SKIPは画面表示専用。

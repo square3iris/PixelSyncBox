@@ -1,11 +1,12 @@
 # ============================================
 # FILE: pixel_sync/uploader.py
-# VERSION: 1.0.1
-# CHANGES: Add development header
+# VERSION: 1.1.0
+# UPDATED: 2026-06-19
 # ============================================
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from pixel_sync.config import UPLOAD_THREADS, COMMIT_INTERVAL
 
+from concurrent.futures import ThreadPoolExecutor
+
+from pixel_sync.config import UPLOAD_THREADS, COMMIT_INTERVAL
 from pixel_sync.db import Database
 from pixel_sync.worker import UploadWorker
 
@@ -21,10 +22,12 @@ class Uploader:
 
         if not files:
 
-            print("Nothing to upload.")
+            print("アップロードが必要なファイルはありません。")
             return
 
         pixel_files = self.worker.camera_files()
+
+        uploaded_files = []
 
         total = len(files)
 
@@ -34,7 +37,7 @@ class Uploader:
 
         print()
         print("=" * 60)
-        print("Uploading")
+        print("アップロード処理中")
         print("=" * 60)
 
         with ThreadPoolExecutor(max_workers=UPLOAD_THREADS) as executor:
@@ -56,6 +59,7 @@ class Uploader:
 
                     self.db.update_status(file_path, "DONE")
                     pixel_files.add(filename)
+                    uploaded_files.append(filename)
                     success += 1
 
                 elif result == "SKIP":
@@ -79,8 +83,28 @@ class Uploader:
 
         print()
         print("=" * 60)
-        print("Finished Upload")
+        print("アップロード完了")
         print("=" * 60)
-        print(f"Uploaded : {success:,}")
-        print(f"Skipped  : {skipped:,}")
-        print(f"Failed   : {failed:,}")
+        print(f"成功     : {success:,}")
+        print(f"スキップ : {skipped:,}")
+        print(f"失敗     : {failed:,}")
+
+        if not uploaded_files:
+            return
+
+        print()
+        print("=" * 60)
+        print("Googleフォトのバックアップ待機")
+        print("=" * 60)
+
+        if self.worker.wait_backup_complete():
+
+            self.worker.delete_uploaded_files(uploaded_files)
+
+        else:
+
+            print()
+            print("=" * 60)
+            print("Delete Skipped")
+            print("=" * 60)
+            print("Googleフォトのバックアップ完了を確認できなかったため削除を中止しました。")

@@ -1,3 +1,9 @@
+# ============================================
+# FILE: pixel_sync/adb.py
+# VERSION: 1.2.0
+# UPDATED: 2026-06-18
+# ============================================
+
 import subprocess
 
 
@@ -7,7 +13,7 @@ class ADB:
     def devices():
 
         print("=" * 60)
-        print("ADB Devices")
+        print("ADB 接続デバイス一覧")
         print("=" * 60)
 
         result = subprocess.run(
@@ -32,8 +38,7 @@ class ADB:
                 print(serial)
 
         print()
-
-        print(f"{len(devices)} device(s) connected.")
+        print(f"{len(devices)} 台のデバイスが接続されています。")
 
         return devices
 
@@ -64,6 +69,24 @@ class ADB:
                 "push",
                 str(local_path),
                 remote_path,
+            ],
+            capture_output=True,
+            text=True,
+        )
+
+        return result.returncode == 0
+
+    @staticmethod
+    def shell(*args):
+        """
+        adb shell を実行する
+        """
+
+        result = subprocess.run(
+            [
+                "adb",
+                "shell",
+                *map(str, args),
             ],
             capture_output=True,
             text=True,

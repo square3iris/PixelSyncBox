@@ -1,58 +1,76 @@
 # ============================================
 # FILE: pixel_sync/ui.py
-# VERSION: 2.0.0
-# UPDATED: 2026-06-17
-# DESCRIPTION: Stable UI parser for Pixel Photos backup detection
+# VERSION: 1.3.0
+# UPDATED: 2026-06-18
 # ============================================
 
 import subprocess
+import time
 import xml.etree.ElementTree as ET
-from pathlib import Path
+
+UI_XML = "ui.xml"
 
 
-UI_PATH = Path("ui.xml")
+def adb(*args):
+    subprocess.run(
+        ["adb", *args],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
 
 
-# ------------------------------------------------
-# ADB UI dump
-# ------------------------------------------------
+def wakeup():
+    adb("shell", "input", "keyevent", "KEYCODE_WAKEUP")
+    time.sleep(1)
+
+
+def unlock():
+    adb("shell", "input", "swipe", "500", "1800", "500", "300")
+    time.sleep(1)
+
+
+def launch_photos():
+    adb(
+        "shell",
+        "monkey",
+        "-p",
+        "com.google.android.apps.photos",
+        "1",
+    )
+    time.sleep(3)
+
+
+def prepare_ui():
+    """
+    GoogleフォトのUI取得ができる状態まで持っていく
+    """
+
+    wakeup()
+    unlock()
+    launch_photos()
+
+
 def dump_ui():
+    adb("shell", "uiautomator", "dump", "/sdcard/ui.xml")
+    adb("pull", "/sdcard/ui.xml", UI_XML)
+
+
+def read_texts():
     try:
-        subprocess.run(
-            ["adb", "shell", "uiautomator", "dump", "/sdcard/ui.xml"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            check=False
-        )
-
-        subprocess.run(
-            ["adb", "pull", "/sdcard/ui.xml", str(UI_PATH)],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            check=False
-        )
-
-        return True
-    except Exception:
-        return False
-
-
-# ------------------------------------------------
-# XML parse
-# ------------------------------------------------
-def parse_ui_texts():
-    if not UI_PATH.exists():
-        return []
-
-    try:
-        tree = ET.parse(UI_PATH)
+        tree = ET.parse(UI_XML)
         root = tree.getroot()
 
         texts = []
-        for node in root.iter("node"):
-            text = node.attrib.get("text", "")
+
+        for node in root.iter():
+
+            text = node.attrib.get("text", "").strip()
             if text:
                 texts.append(text)
+
+            desc = node.attrib.get("content-desc", "").strip()
+            if desc:
+                texts.append(desc)
 
         return texts
 
@@ -60,95 +78,112 @@ def parse_ui_texts():
         return []
 
 
-# ------------------------------------------------
-# debug
-# ------------------------------------------------
 def debug_print():
+    prepare_ui()
     dump_ui()
-    texts = parse_ui_texts()
 
-    print("===== UI TEXTS =====")
-    for t in texts:
+    print("===== 取得したUIテキスト一覧 =====")
+
+    for t in read_texts():
         print(t)
 
 
-# ------------------------------------------------
-# core logic
-# ------------------------------------------------
-def get_backup_status():
-    dump_ui()
-    texts = parse_ui_texts()
+def is_lock_screen(texts):
 
-    text_blob = " ".join(texts)
-
-    # =================================================
-    # 1. LOCK SCREEN FILTER（最重要）
-    # =================================================
-    lock_indicators = [
+    keywords = [
+        "USBデバッグ",
         "充電完了",
+        "Android システム",
         "サイレント モード",
-        "スワイプして",
-        "ロック解除",
-        "通知"
     ]
 
-    if any(k in text_blob for k in lock_indicators):
-        # ロック画面の可能性が高い
-        return "lock_screen"
+    hit = 0
 
-    # =================================================
-    # 2. GOOGLE PHOTOS DETECTION
-    # =================================================
-    photos_indicators = [
-        "フォト",
-        "Google Photos",
-        "ライブラリ",
-        "コレクション",
-        "作成"
+    for k in keywords:
+        if any(k in t for t in texts):
+            hit += 1
+
+    return hit >= 2
+
+
+def is_tutorial(texts):
+
+    keywords = [
+        "新たな検索",
+        "検索＆クリエイト",
+        "試してみる",
     ]
 
-    if not any(k in text_blob for k in photos_indicators):
-        return "not_in_photos"
+    return any(
+        any(k in t for k in keywords)
+        for t in texts
+    )
 
-    # =================================================
-    # 3. BACKUP STATE DETECTION
-    # =================================================
-    backup_running_keywords = [
+
+def is_complete(texts):
+
+    keywords = [
+        "バックアップ完了",
+        "バックアップが完了",
+    ]
+
+    return any(
+        any(k in t for k in keywords)
+        for t in texts
+    )
+
+
+def is_backing_up(texts):
+
+    keywords = [
         "バックアップ中",
         "バックアップしています",
-        "準備しています",
-        "アップロード中"
+        "アップロード中",
+        "残り",
+        "あと",
     ]
 
-    backup_done_keywords = [
-        "バックアップ完了",
-        "完了しました",
-        "すべてバックアップ済み"
+    return any(
+        any(k in t for k in keywords)
+        for t in texts
+    )
+
+
+def is_waiting(texts):
+
+    keywords = [
+        "アップロードを待機しています",
+        "Wi-Fi を待機しています",
+        "Wi-Fiに接続されるのを待っています",
+        "充電を待機しています",
     ]
 
-    backup_error_keywords = [
-        "エラー",
-        "一時停止",
-        "Wi-Fi待機"
-    ]
+    return any(
+        any(k in t for k in keywords)
+        for t in texts
+    )
 
-    if any(k in text_blob for k in backup_running_keywords):
-        return "backing_up"
 
-    if any(k in text_blob for k in backup_done_keywords):
+def get_backup_status():
+
+    prepare_ui()
+
+    dump_ui()
+    texts = read_texts()
+
+    if is_lock_screen(texts):
+        return "lock_screen"
+
+    if is_tutorial(texts):
+        return "tutorial"
+
+    if is_waiting(texts):
+        return "waiting"
+
+    if is_complete(texts):
         return "complete"
 
-    if any(k in text_blob for k in backup_error_keywords):
-        return "paused_or_error"
+    if is_backing_up(texts):
+        return "backing_up"
 
-    # =================================================
-    # 4. FALLBACK
-    # =================================================
     return "unknown"
-
-
-# ------------------------------------------------
-# helper for CLI test
-# ------------------------------------------------
-if __name__ == "__main__":
-    print(get_backup_status())
