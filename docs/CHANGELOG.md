@@ -1,24 +1,73 @@
-## v1.3.0 (2026-06-19)
+# CHANGELOG
+
+## v1.3.0 (2026-06-18)
 
 ### Added
-- Google Photos のバックアップ状態自動判定機能
-- Pixel の画面起動・ロック解除処理
-- Google Photos 自動起動
-- Google Photos UI解析（uiautomator）
-- ロック画面検出
-- Google Photos チュートリアル画面検出
-- バックアップ待機処理 (`wait_backup_complete()`)
-- バックアップ完了後の Pixel ファイル自動削除
+
+- `prepare_ui()` を追加し、UI取得前処理を共通化
+- `KEYCODE_WAKEUP` による安定した画面復帰
+- ロック解除処理を共通化
+- Googleフォト自動起動処理を追加
+- `debug_print()` でも自動的に画面準備を行うよう改善
+- バックアップ待機中（`backing_up`）判定を追加
+- チュートリアル画面（`tutorial`）判定を追加
+- ロック画面（`lock_screen`）判定を追加
+- UI文字列取得処理を整理
+- GoogleフォトUI解析の安定化
 
 ### Changed
-- Scanner が既存ファイルを `SKIP` に更新しない設計へ変更
-- DBの `NEW` 状態を維持するよう改善
-- Upload完了後に Google Photos のバックアップ完了を待機してから削除するフローへ変更
-- UI解析モジュール (`ui.py`) を v1.3.0 として全面改善
-- Google Photos の「待機中」「バックアップ中」「完了」を判定可能に改善
+
+- `get_backup_status()` を `prepare_ui()` ベースへ変更
+- UI取得フローを統一
+- XML解析処理を整理
+- 判定ロジックを関数ごとに分離し保守性を向上
 
 ### Fixed
-- ロック画面誤判定
-- Google Photos 起動直後のUI取得失敗
-- バックアップ完了前に削除される可能性を解消
-- Scanner が NEW を消してしまう問題
+
+- `KEYCODE_POWER` では画面復帰が不安定だったため `KEYCODE_WAKEUP` に変更
+- ロック画面取得による `unknown` 判定を改善
+- Googleフォト起動タイミングを調整
+- `debug_print()` と `get_backup_status()` の動作差異を解消
+
+### Verified
+
+正常動作を確認
+
+- Googleフォト起動
+- 画面復帰
+- ロック解除
+- UI取得
+- XML解析
+- `complete` 判定
+- `backing_up` 判定
+- `tutorial` 判定
+- `lock_screen` 判定
+
+---
+
+## v1.2.0 (2026-06-18)
+
+### Added
+
+- `prepare_ui()` の初版実装
+- GoogleフォトUI取得機能
+- `KEYCODE_WAKEUP` 採用
+- `debug_print()` 追加
+
+### Verified
+
+- Googleフォト起動成功
+- UI取得成功
+- `complete` 判定成功
+
+---
+
+## v1.1.0
+
+### Completed
+
+- Scanner 完成
+- Database 完成
+- Queue 管理完成
+- Uploader 完成
+- GoogleフォトUI解析開始

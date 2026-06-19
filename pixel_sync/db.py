@@ -6,7 +6,7 @@
 import sqlite3
 from pathlib import Path
 
-from pixel_sync.config import DB_FILE
+from pixel_sync.settings import DB_FILE
 
 
 class Database:

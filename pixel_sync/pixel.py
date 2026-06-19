@@ -5,12 +5,17 @@
 # ============================================
 
 from pixel_sync.adb import ADB
+from pixel_sync.settings import (
+    PIXEL_CAMERA_DIR,
+    PIXEL_BACKUP_DIR,
+)
+
 
 
 class Pixel:
 
-    CAMERA_DIR = "/sdcard/DCIM/Camera"
-    BACKUP_DIR = "/sdcard/DCIM/Backup"
+    CAMERA_DIR = PIXEL_CAMERA_DIR
+    BACKUP_DIR = PIXEL_BACKUP_DIR
 
     def camera_files(self):
 

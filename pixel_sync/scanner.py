@@ -7,7 +7,8 @@ import os
 import time
 from pathlib import Path
 
-from pixel_sync.config import PHOTO_DIR, SUPPORTED_EXTENSIONS
+from pixel_sync.settings import PHOTO_DIR
+from pixel_sync.config import SUPPORTED_EXTENSIONS
 from pixel_sync.media import MediaFile
 from pixel_sync.db import Database
 

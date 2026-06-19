@@ -9,7 +9,11 @@ from pathlib import Path
 
 from pixel_sync.pixel import Pixel
 from pixel_sync.config import MAX_RETRY, RETRY_WAIT
+from pixel_sync.settings import BACKUP_TIMEOUT
+
 from pixel_sync.ui import get_backup_status
+from pixel_sync.i18n import tr
+from pixel_sync.i18n import tr
 
 
 class UploadWorker:
@@ -69,7 +73,7 @@ class UploadWorker:
 
         print()
         print("=" * 60)
-        print("Waiting Google Photos Backup")
+        print(tr("backup.waiting"))
         print("=" * 60)
 
         start = time.time()
@@ -82,13 +86,13 @@ class UploadWorker:
 
             if status == "complete":
 
-                print("Backup Complete")
+                print(tr("backup.complete"))
 
                 return True
 
             if time.time() - start > timeout:
 
-                print("Backup Timeout")
+                print(tr("backup.timeout"))
 
                 return False
 
@@ -100,7 +104,7 @@ class UploadWorker:
 
         print()
         print("=" * 60)
-        print("Deleting Uploaded Files")
+        print(tr("delete.start"))
         print("=" * 60)
 
         deleted = 0

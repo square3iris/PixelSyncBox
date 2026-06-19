@@ -1,18 +1,24 @@
-# Virtual Environment
-.venv/
+# ============================================
+# PixelSyncBox
+# ============================================
+
+# Database
+database/*.db
+
+# Logs
+logs/*
+!logs/.gitkeep
+
+# Test Media
+tests/sample_media/
+testfile/
 
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
 
-# Database
-*.db
-
-# Logs
-logs/
-
-# Temp
-temp/
+# Backup files
+*.bak
 
 # macOS
 .DS_Store
@@ -20,3 +26,15 @@ temp/
 # IDE
 .vscode/
 .idea/
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Temporary files
+*.tmp
+*.swp
+
+# UI Dump
+ui.xml

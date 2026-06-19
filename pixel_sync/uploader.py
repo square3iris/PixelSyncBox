@@ -6,9 +6,11 @@
 
 from concurrent.futures import ThreadPoolExecutor
 
-from pixel_sync.config import UPLOAD_THREADS, COMMIT_INTERVAL
+from pixel_sync.settings import UPLOAD_THREADS
+from pixel_sync.config import COMMIT_INTERVAL
 from pixel_sync.db import Database
 from pixel_sync.worker import UploadWorker
+from pixel_sync.i18n import tr
 
 
 class Uploader:
@@ -37,7 +39,7 @@ class Uploader:
 
         print()
         print("=" * 60)
-        print("アップロード処理中")
+        print(tr("upload.start"))
         print("=" * 60)
 
         with ThreadPoolExecutor(max_workers=UPLOAD_THREADS) as executor:
@@ -83,18 +85,18 @@ class Uploader:
 
         print()
         print("=" * 60)
-        print("アップロード完了")
+        print(tr("upload.complete"))
         print("=" * 60)
-        print(f"成功     : {success:,}")
-        print(f"スキップ : {skipped:,}")
-        print(f"失敗     : {failed:,}")
+        print(f"{tr('status.success'):<8}: {success:,}")
+        print(f"{tr('status.skip'):<8}: {skipped:,}")
+        print(f"{tr('status.failed'):<8}: {failed:,}")
 
         if not uploaded_files:
             return
 
         print()
         print("=" * 60)
-        print("Googleフォトのバックアップ待機")
+        print(tr("backup.wait"))
         print("=" * 60)
 
         if self.worker.wait_backup_complete():
