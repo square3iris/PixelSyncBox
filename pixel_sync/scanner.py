@@ -42,42 +42,46 @@ class Scanner:
 
     def scan(self):
 
-        self.start_time = time.time()
+        try:
 
-        print("=" * 60)
-        print("Pixel Sync Box スキャナー")
-        print("=" * 60)
-        print(f"対象ディレクトリ : {PHOTO_DIR}")
-        print()
+            self.start_time = time.time()
 
-        self._scan_dir(PHOTO_DIR)
+            print("=" * 60)
+            print("Pixel Sync Box スキャナー")
+            print("=" * 60)
+            print(f"対象ディレクトリ : {PHOTO_DIR}")
+            print()
 
-        self.db.commit()
+            self._scan_dir(PHOTO_DIR)
 
-        elapsed = time.time() - self.start_time
+            self.db.commit()
 
-        print()
-        print("=" * 60)
-        print("スキャン完了")
-        print("=" * 60)
+            elapsed = time.time() - self.start_time
 
-        print(f"画像ファイル : {self.image_files:,}")
-        print(f"動画ファイル : {self.video_files:,}")
-        print(f"合計ファイル : {self.total_files:,}")
-        print()
+            print()
+            print("=" * 60)
+            print("スキャン完了")
+            print("=" * 60)
 
-        print(f"新規追加     : {self.new_files:,}")
-        print(f"更新         : {self.updated_files:,}")
-        print(f"スキップ     : {self.skipped_files:,}")
-        print()
+            print(f"画像ファイル : {self.image_files:,}")
+            print(f"動画ファイル : {self.video_files:,}")
+            print(f"合計ファイル : {self.total_files:,}")
+            print()
 
-        print(f"データベース : {self.db.count():,} レコード")
-        print(f"経過時間     : {elapsed:.1f} 秒")
+            print(f"新規追加     : {self.new_files:,}")
+            print(f"更新         : {self.updated_files:,}")
+            print(f"スキップ     : {self.skipped_files:,}")
+            print()
 
-        if elapsed > 0:
-            print(f"処理速度     : {self.total_files / elapsed:.1f} ファイル/秒")
+            print(f"データベース : {self.db.count():,} レコード")
+            print(f"経過時間     : {elapsed:.1f} 秒")
 
-        self.db.close()
+            if elapsed > 0:
+                print(f"処理速度     : {self.total_files / elapsed:.1f} ファイル/秒")
+
+        finally:
+
+            self.db.close()
 
     def _scan_dir(self, folder: Path):
 

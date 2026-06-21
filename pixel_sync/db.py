@@ -118,7 +118,7 @@ class Database:
         self.cursor.execute("""
         SELECT path
         FROM files
-        WHERE status IN ('NEW', 'UPDATED')
+        WHERE status IN ('NEW', 'UPDATED', 'UPLOADED')
         ORDER BY id
         """)
 
@@ -142,3 +142,6 @@ class Database:
     def close(self):
 
         self.conn.close()
+
+        from pixel_sync.logger import Logger
+        Logger.info('Database closed')

@@ -6,7 +6,7 @@
 from pixel_sync.adb import ADB
 from pixel_sync.scanner import Scanner
 from pixel_sync.sync import Sync
-
+from pixel_sync.logger import Logger
 
 def main():
 
@@ -29,4 +29,18 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+
+    try:
+
+        main()
+
+    except KeyboardInterrupt:
+
+        print()
+        Logger.warning("Interrupted by user")
+        Logger.info("Safe shutdown")
+
+    except Exception as e:
+
+        Logger.error(str(e))
+        raise

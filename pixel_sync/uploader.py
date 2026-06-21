@@ -59,14 +59,14 @@ class Uploader:
 
                 if result == "SUCCESS":
 
-                    self.db.update_status(file_path, "DONE")
+                    self.db.update_status(file_path, "UPLOADED")
                     pixel_files.add(filename)
-                    uploaded_files.append(filename)
+                    uploaded_files.append((file_path, filename))
                     success += 1
 
                 elif result == "SKIP":
 
-                    self.db.update_status(file_path, "DONE")
+                    self.db.update_status(file_path, "UPLOADED")
                     skipped += 1
 
                 else:
@@ -101,7 +101,14 @@ class Uploader:
 
         if self.worker.wait_backup_complete():
 
-            self.worker.delete_uploaded_files(uploaded_files)
+            for file_path, filename in uploaded_files:
+                self.db.update_status(file_path, "DONE")
+
+            self.db.commit()
+
+            self.worker.delete_uploaded_files(
+                [filename for _, filename in uploaded_files]
+            )
 
         else:
 

@@ -20,14 +20,18 @@ class Sync:
 
     def upload_all(self):
 
-        files = self.get_upload_list()
+        try:
 
-        # TEST MODE
-        files = files[:10]
+            files = self.get_upload_list()
 
-        self.uploader.upload_files(files)
+            # TEST MODE
+            files = files[:10]
 
-        self.db.close()
+            self.uploader.upload_files(files)
+
+        finally:
+
+            self.db.close()
     def run(self):
 
         self.upload_all()

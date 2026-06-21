@@ -5,6 +5,9 @@
 # ============================================
 
 import subprocess
+import time
+
+from pixel_sync.logger import Logger
 
 
 class ADB:
@@ -42,6 +45,24 @@ class ADB:
 
         return devices
 
+
+    @staticmethod
+    def has_device():
+
+        result = subprocess.run(
+            ["adb", "devices"],
+            capture_output=True,
+            text=True
+        )
+
+        for line in result.stdout.splitlines()[1:]:
+
+            if "\tdevice" in line:
+
+                return True
+
+        return False
+
     @staticmethod
     def list_dir(path):
 
@@ -74,6 +95,25 @@ class ADB:
             text=True,
         )
 
+        if result.returncode == 0:
+            return True
+
+        Logger.warning("ADB push failed")
+
+        if not ADB.reconnect():
+            return False
+
+        result = subprocess.run(
+            [
+                "adb",
+                "push",
+                str(local_path),
+                remote_path,
+            ],
+            capture_output=True,
+            text=True,
+        )
+
         return result.returncode == 0
 
     @staticmethod
@@ -92,4 +132,42 @@ class ADB:
             text=True,
         )
 
+        if result.returncode == 0:
+            return True
+
+        Logger.warning("ADB shell failed")
+
+        if not ADB.reconnect():
+            return False
+
+        result = subprocess.run(
+            [
+                "adb",
+                "shell",
+                *map(str, args),
+            ],
+            capture_output=True,
+            text=True,
+        )
+
         return result.returncode == 0
+
+    @staticmethod
+    def reconnect(max_retry=30):
+
+        for attempt in range(max_retry):
+
+            if ADB.has_device():
+
+                Logger.success("ADB reconnected")
+                return True
+
+            Logger.warning(
+                f"ADB disconnected retry={attempt + 1}/{max_retry}"
+            )
+
+            time.sleep(2)
+
+        Logger.error("ADB reconnect failed")
+        return False
+
