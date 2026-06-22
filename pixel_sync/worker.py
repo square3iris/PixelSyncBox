@@ -9,7 +9,10 @@ from pathlib import Path
 
 from pixel_sync.pixel import Pixel
 from pixel_sync.config import MAX_RETRY, RETRY_WAIT
-from pixel_sync.settings import BACKUP_TIMEOUT
+from pixel_sync.settings import (
+    BACKUP_TIMEOUT,
+    BACKUP_STALLED_LIMIT,
+)
 
 from pixel_sync.ui import (
     get_backup_status,
@@ -82,6 +85,7 @@ class UploadWorker:
         start = time.time()
 
         unknown_count = 0
+        backing_up_count = 0
 
         while True:
 
@@ -102,6 +106,24 @@ class UploadWorker:
             else:
 
                 unknown_count = 0
+
+            if status == "backing_up":
+
+                backing_up_count += 1
+
+                if backing_up_count >= BACKUP_STALLED_LIMIT:
+
+                    Logger.warning(
+                        "Google Photos Backup Stalled"
+                    )
+
+                    prepare_ui()
+
+                    backing_up_count = 0
+
+            else:
+
+                backing_up_count = 0
 
             print(f"Status : {status}")
 
