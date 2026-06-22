@@ -11,8 +11,11 @@ from pixel_sync.pixel import Pixel
 from pixel_sync.config import MAX_RETRY, RETRY_WAIT
 from pixel_sync.settings import BACKUP_TIMEOUT
 
-from pixel_sync.ui import get_backup_status
-from pixel_sync.i18n import tr
+from pixel_sync.ui import (
+    get_backup_status,
+    prepare_ui,
+)
+from pixel_sync.logger import Logger
 from pixel_sync.i18n import tr
 
 
@@ -78,9 +81,27 @@ class UploadWorker:
 
         start = time.time()
 
+        unknown_count = 0
+
         while True:
 
             status = get_backup_status()
+
+            if status == "unknown":
+
+                unknown_count += 1
+
+                if unknown_count >= 5:
+
+                    Logger.warning("Google Photos Recovery")
+
+                    prepare_ui()
+
+                    unknown_count = 0
+
+            else:
+
+                unknown_count = 0
 
             print(f"Status : {status}")
 
