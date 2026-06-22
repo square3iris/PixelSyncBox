@@ -1,4 +1,37 @@
 # CHANGELOG
+## v1.4.2 (2026-06-21)
+
+### Added
+
+- BACKUP_STALLED_LIMIT を追加
+- Google Photos backup stalled 検出を追加
+
+### Fixed
+
+- Google Photos が backing_up 状態で長時間停止した場合の自動復旧を追加
+
+### Verified
+
+- worker.py compile
+- 全体 compile
+- stalled recovery 動作確認
+
+---
+
+## v1.4.1 (2026-06-21)
+
+### Added
+
+- Google Photos unknown 自動復旧を追加
+
+### Fixed
+
+- Google Photos が unknown 状態で継続した場合の自動復旧を追加
+
+### Verified
+
+- worker.py compile
+- unknown recovery 動作確認
 
 ## v1.4.0 (2026-06-21)
 
